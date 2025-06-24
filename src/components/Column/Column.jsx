@@ -4,9 +4,12 @@ import {
   Paper,
   CircularProgress,
   Button,
+  Alert,
 } from "@mui/material";
 import { TaskCard } from "../Task/TaskCard";
+import { TaskCardSkeleton } from "../Loading/LoadingSkeleton";
 import { useTasksByColumn, useSearchTasks } from "../../hooks/useTasks";
+import { useInfiniteScroll } from "../../hooks/useInfiniteScroll";
 import useTaskStore from "../../store/taskStore";
 import { PAGE_SIZE } from "../../utils/constants";
 import { useDroppable } from "@dnd-kit/core";
@@ -14,10 +17,12 @@ import {
   SortableContext,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
+import { useState } from "react";
 
 export function Column({ columnKey, title }) {
   const { searchQuery, currentPage, setCurrentPage, draggedTask } =
     useTaskStore();
+  const [scrollMode, setScrollMode] = useState("button"); // 'button' or 'infinite'
   const page = currentPage[columnKey];
 
   const { setNodeRef, isOver } = useDroppable({
@@ -33,7 +38,7 @@ export function Column({ columnKey, title }) {
 
   const isSearching = searchQuery_trimmed.length > 0;
   const query = isSearching ? searchResults : tasksQuery;
-  const { data, isLoading, error } = query;
+  const { data, isLoading, error, isFetching } = query;
 
   let tasks = [];
   let total = 0;
@@ -51,11 +56,50 @@ export function Column({ columnKey, title }) {
   }
 
   const handleLoadMore = () => {
-    setCurrentPage(columnKey, page + 1);
+    if (!isLoading && hasMore) {
+      setCurrentPage(columnKey, page + 1);
+    }
   };
+
+  const lastElementRef = useInfiniteScroll(
+    hasMore && scrollMode === "infinite",
+    isLoading,
+    handleLoadMore
+  );
 
   const isDraggedTaskInColumn = draggedTask && draggedTask.column === columnKey;
   const canDrop = isOver && draggedTask && draggedTask.column !== columnKey;
+
+  const toggleScrollMode = () => {
+    setScrollMode(scrollMode === "button" ? "infinite" : "button");
+  };
+
+  if (error) {
+    return (
+      <Paper
+        sx={{
+          flex: "1 1 300px",
+          minWidth: 300,
+          maxWidth: 350,
+          p: 2,
+          height: "fit-content",
+          minHeight: "500px",
+        }}>
+        <Typography variant="h6" gutterBottom>
+          {title}
+        </Typography>
+        <Alert severity="error" sx={{ mt: 2 }}>
+          Failed to load tasks. Please try again.
+          <Button
+            size="small"
+            onClick={() => window.location.reload()}
+            sx={{ ml: 1 }}>
+            Retry
+          </Button>
+        </Alert>
+      </Paper>
+    );
+  }
 
   return (
     <Paper
@@ -72,14 +116,31 @@ export function Column({ columnKey, title }) {
         p: 2,
         height: "fit-content",
         minHeight: "500px",
+        maxHeight: "80vh",
         border: canDrop ? "2px dashed" : "2px solid transparent",
         borderColor: canDrop ? "primary.main" : "transparent",
         transition: "all 0.2s ease",
+        display: "flex",
+        flexDirection: "column",
       }}>
       <Box sx={{ mb: 2 }}>
-        <Typography variant="h6" gutterBottom>
-          {title}
-        </Typography>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}>
+          <Typography variant="h6" gutterBottom>
+            {title}
+          </Typography>
+          <Button
+            size="small"
+            variant="text"
+            onClick={toggleScrollMode}
+            sx={{ fontSize: "0.75rem" }}>
+            {scrollMode === "button" ? "∞" : "⬇"}
+          </Button>
+        </Box>
         <Typography variant="body2" color="text.secondary">
           {total} task{total !== 1 ? "s" : ""}
         </Typography>
@@ -90,41 +151,61 @@ export function Column({ columnKey, title }) {
         )}
       </Box>
 
-      <SortableContext
-        items={tasks.map((task) => task.id)}
-        strategy={verticalListSortingStrategy}>
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-          {isLoading && page === 1 ? (
-            <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}>
-              <CircularProgress />
-            </Box>
-          ) : error ? (
-            <Typography color="error" align="center">
-              Error loading tasks
-            </Typography>
-          ) : tasks.length === 0 ? (
-            <Typography color="text.secondary" align="center" sx={{ py: 4 }}>
-              {isSearching ? "No matching tasks" : "No tasks yet"}
-            </Typography>
-          ) : (
-            <>
-              {tasks.map((task) => (
-                <TaskCard key={task.id} task={task} />
-              ))}
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          gap: 2,
+          overflowY: "auto",
+          flexGrow: 1,
+          pr: 1,
+        }}>
+        {isLoading && page === 1 ? (
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+            {Array.from({ length: 3 }).map((_, index) => (
+              <TaskCardSkeleton key={index} />
+            ))}
+          </Box>
+        ) : tasks.length === 0 ? (
+          <Typography color="text.secondary" align="center" sx={{ py: 4 }}>
+            {isSearching ? "No matching tasks" : "No tasks yet"}
+          </Typography>
+        ) : (
+          <SortableContext
+            items={tasks.map((task) => task.id)}
+            strategy={verticalListSortingStrategy}>
+            {tasks.map((task, index) => {
+              const isLastItem = index === tasks.length - 1;
+              const ref =
+                scrollMode === "infinite" && isLastItem && hasMore
+                  ? lastElementRef
+                  : null;
 
-              {!isSearching && hasMore && (
-                <Button
-                  variant="outlined"
-                  onClick={handleLoadMore}
-                  disabled={isLoading}
-                  sx={{ mt: 1 }}>
-                  {isLoading ? "Loading..." : "Load More"}
-                </Button>
-              )}
-            </>
-          )}
-        </Box>
-      </SortableContext>
+              return (
+                <div key={task.id} ref={ref}>
+                  <TaskCard task={task} />
+                </div>
+              );
+            })}
+          </SortableContext>
+        )}
+
+        {!isSearching && hasMore && scrollMode === "button" && (
+          <Button
+            variant="outlined"
+            onClick={handleLoadMore}
+            disabled={isLoading}
+            sx={{ mt: 1 }}>
+            {isLoading ? "Loading..." : "Load More"}
+          </Button>
+        )}
+
+        {!isSearching && isFetching && page > 1 && (
+          <Box sx={{ display: "flex", justifyContent: "center", py: 2 }}>
+            <CircularProgress size={24} />
+          </Box>
+        )}
+      </Box>
     </Paper>
   );
 }
