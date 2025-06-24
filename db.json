@@ -4,9 +4,9 @@
       "id": 1,
       "title": "Design homepage",
       "description": "Create wireframes and mockups for the main landing page including hero section, features, and call-to-action buttons",
-      "column": "backlog",
+      "column": "in_progress",
       "createdAt": "2024-01-15T10:30:00.000Z",
-      "updatedAt": "2024-01-15T10:30:00.000Z"
+      "updatedAt": "2025-06-24T12:58:59.069Z"
     },
     {
       "id": 2,
@@ -25,12 +25,11 @@
       "updatedAt": "2024-01-17T16:30:00.000Z"
     },
     {
-      "id": 4,
-      "title": "Write unit tests",
+      "title": "Write unit tests ",
       "description": "Add comprehensive test coverage for authentication, API endpoints, and core business logic",
-      "column": "review",
-      "createdAt": "2024-01-18T08:00:00.000Z",
-      "updatedAt": "2024-01-18T17:45:00.000Z"
+      "column": "backlog",
+      "updatedAt": "2025-06-24T12:59:54.471Z",
+      "id": 4
     },
     {
       "id": 5,
@@ -44,9 +43,9 @@
       "id": 6,
       "title": "API documentation",
       "description": "Create comprehensive API documentation using Swagger/OpenAPI specification",
-      "column": "backlog",
+      "column": "review",
       "createdAt": "2024-01-20T10:15:00.000Z",
-      "updatedAt": "2024-01-20T10:15:00.000Z"
+      "updatedAt": "2025-06-24T12:59:19.880Z"
     },
     {
       "id": 7,

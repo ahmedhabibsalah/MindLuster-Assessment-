@@ -7,15 +7,37 @@ import {
   Menu,
   MenuItem,
 } from "@mui/material";
-import { MoreVert, Edit, Delete } from "@mui/icons-material";
+import { MoreVert, Edit, Delete, DragIndicator } from "@mui/icons-material";
 import { useState } from "react";
 import { useDeleteTask } from "../../hooks/useTasks";
 import useTaskStore from "../../store/taskStore";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
-export function TaskCard({ task }) {
+export function TaskCard({ task, isDragging = false }) {
   const [anchorEl, setAnchorEl] = useState(null);
   const deleteTask = useDeleteTask();
   const openTaskForm = useTaskStore((state) => state.openTaskForm);
+
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging: isSortableDragging,
+  } = useSortable({
+    id: task.id,
+    data: {
+      task,
+    },
+  });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isSortableDragging ? 0.5 : 1,
+  };
 
   const handleMenuOpen = (event) => {
     event.stopPropagation();
@@ -42,16 +64,34 @@ export function TaskCard({ task }) {
     return new Date(dateString).toLocaleDateString();
   };
 
+  if (isDragging) {
+    return (
+      <Card sx={{ cursor: "grabbing" }}>
+        <CardContent sx={{ pb: 1 }}>
+          <Typography variant="h6" component="h3" sx={{ mb: 1 }}>
+            {task.title}
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            {task.description}
+          </Typography>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card
+      ref={setNodeRef}
+      style={style}
       sx={{
-        cursor: "pointer",
+        cursor: isSortableDragging ? "grabbing" : "grab",
         transition: "all 0.2s",
         "&:hover": {
-          transform: "translateY(-2px)",
+          transform: isSortableDragging ? "none" : "translateY(-2px)",
           boxShadow: 3,
         },
-      }}>
+      }}
+      {...attributes}>
       <CardContent sx={{ pb: 1 }}>
         <Box
           sx={{
@@ -59,19 +99,35 @@ export function TaskCard({ task }) {
             justifyContent: "space-between",
             alignItems: "flex-start",
           }}>
-          <Typography variant="h6" component="h3" sx={{ mb: 1, flexGrow: 1 }}>
-            {task.title}
-          </Typography>
+          <Box sx={{ display: "flex", alignItems: "center", flexGrow: 1 }}>
+            <Box
+              {...listeners}
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                mr: 1,
+                cursor: "grab",
+                "&:active": { cursor: "grabbing" },
+              }}>
+              <DragIndicator sx={{ color: "text.secondary", fontSize: 20 }} />
+            </Box>
+            <Typography variant="h6" component="h3" sx={{ mb: 1, flexGrow: 1 }}>
+              {task.title}
+            </Typography>
+          </Box>
           <IconButton size="small" onClick={handleMenuOpen} sx={{ ml: 1 }}>
             <MoreVert />
           </IconButton>
         </Box>
 
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+        <Typography
+          variant="body2"
+          color="text.secondary"
+          sx={{ mb: 2, ml: 4 }}>
           {task.description}
         </Typography>
 
-        <Typography variant="caption" color="text.secondary">
+        <Typography variant="caption" color="text.secondary" sx={{ ml: 4 }}>
           Created: {formatDate(task.createdAt)}
         </Typography>
 

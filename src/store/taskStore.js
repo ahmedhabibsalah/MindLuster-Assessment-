@@ -5,6 +5,7 @@ const useTaskStore = create()(
   devtools(
     (set, get) => ({
       searchQuery: "",
+      filterColumn: "all",
       currentPage: {
         backlog: 1,
         in_progress: 1,
@@ -17,6 +18,8 @@ const useTaskStore = create()(
       editingTask: null,
 
       setSearchQuery: (query) => set({ searchQuery: query }),
+
+      setFilterColumn: (column) => set({ filterColumn: column }),
 
       setCurrentPage: (column, page) =>
         set((state) => ({
@@ -42,6 +45,18 @@ const useTaskStore = create()(
 
       resetPagination: () =>
         set({
+          currentPage: {
+            backlog: 1,
+            in_progress: 1,
+            review: 1,
+            done: 1,
+          },
+        }),
+
+      clearAllFilters: () =>
+        set({
+          searchQuery: "",
+          filterColumn: "all",
           currentPage: {
             backlog: 1,
             in_progress: 1,
