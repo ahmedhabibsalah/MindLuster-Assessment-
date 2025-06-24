@@ -2,7 +2,9 @@
 
 A modern, feature-rich Kanban-style task management application built with React, Material-UI, and advanced state management.
 
-![Kanban Board Demo](./todo.png)
+![Kanban Board Demo]
+![screencapture-localhost-5173-2025-06-24-16_41_20](https://github.com/user-attachments/assets/f61e84b0-54ad-4f8c-b535-a1026d7c4890)
+
 
 ## ✨ Features
 
