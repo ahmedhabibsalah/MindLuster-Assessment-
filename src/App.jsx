@@ -1,35 +1,47 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { ThemeProvider } from "@mui/material/styles";
+import CssBaseline from "@mui/material/CssBaseline";
+import { Layout, Board, Column, TaskCard } from "./components/Layout/Layout";
+import { useTasks } from "./hooks/useTasks";
+import { COLUMN_ORDER, COLUMN_TITLES } from "./utils/constants";
+import theme from "./styles/theme";
+import { QueryProvider } from "./services/queryClient";
 
-function App() {
-  const [count, setCount] = useState(0)
+function KanbanContent() {
+  const { data: tasks = [], isLoading, error } = useTasks();
+
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error loading tasks</div>;
+
+  const tasksByColumn = tasks.reduce((acc, task) => {
+    if (!acc[task.column]) acc[task.column] = [];
+    acc[task.column].push(task);
+    return acc;
+  }, {});
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <Layout>
+      <Board>
+        {COLUMN_ORDER.map((columnKey) => (
+          <Column key={columnKey} title={COLUMN_TITLES[columnKey]}>
+            {(tasksByColumn[columnKey] || []).map((task) => (
+              <TaskCard key={task.id} task={task} />
+            ))}
+          </Column>
+        ))}
+      </Board>
+    </Layout>
+  );
 }
 
-export default App
+function App() {
+  return (
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <QueryProvider>
+        <KanbanContent />
+      </QueryProvider>
+    </ThemeProvider>
+  );
+}
+
+export default App;
