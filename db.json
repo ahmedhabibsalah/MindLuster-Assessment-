@@ -1,0 +1,84 @@
+{
+  "tasks": [
+    {
+      "id": 1,
+      "title": "Design homepage",
+      "description": "Create wireframes and mockups for the main landing page including hero section, features, and call-to-action buttons",
+      "column": "backlog",
+      "createdAt": "2024-01-15T10:30:00.000Z",
+      "updatedAt": "2024-01-15T10:30:00.000Z"
+    },
+    {
+      "id": 2,
+      "title": "Setup authentication",
+      "description": "Implement user login and registration with JWT tokens and password hashing",
+      "column": "in_progress",
+      "createdAt": "2024-01-16T09:15:00.000Z",
+      "updatedAt": "2024-01-16T14:20:00.000Z"
+    },
+    {
+      "id": 3,
+      "title": "Create user dashboard",
+      "description": "Build responsive dashboard with user statistics, recent activities, and navigation menu",
+      "column": "in_progress",
+      "createdAt": "2024-01-17T11:45:00.000Z",
+      "updatedAt": "2024-01-17T16:30:00.000Z"
+    },
+    {
+      "id": 4,
+      "title": "Write unit tests",
+      "description": "Add comprehensive test coverage for authentication, API endpoints, and core business logic",
+      "column": "review",
+      "createdAt": "2024-01-18T08:00:00.000Z",
+      "updatedAt": "2024-01-18T17:45:00.000Z"
+    },
+    {
+      "id": 5,
+      "title": "Deploy to staging",
+      "description": "Configure CI/CD pipeline and deploy application to staging environment for testing",
+      "column": "done",
+      "createdAt": "2024-01-19T13:20:00.000Z",
+      "updatedAt": "2024-01-19T18:00:00.000Z"
+    },
+    {
+      "id": 6,
+      "title": "API documentation",
+      "description": "Create comprehensive API documentation using Swagger/OpenAPI specification",
+      "column": "backlog",
+      "createdAt": "2024-01-20T10:15:00.000Z",
+      "updatedAt": "2024-01-20T10:15:00.000Z"
+    },
+    {
+      "id": 7,
+      "title": "Mobile responsiveness",
+      "description": "Ensure all pages work perfectly on mobile devices and tablets",
+      "column": "backlog",
+      "createdAt": "2024-01-21T14:30:00.000Z",
+      "updatedAt": "2024-01-21T14:30:00.000Z"
+    },
+    {
+      "id": 8,
+      "title": "Performance optimization",
+      "description": "Optimize loading times, implement lazy loading, and reduce bundle size",
+      "column": "review",
+      "createdAt": "2024-01-22T09:45:00.000Z",
+      "updatedAt": "2024-01-22T15:20:00.000Z"
+    },
+    {
+      "id": 9,
+      "title": "Security audit",
+      "description": "Conduct thorough security review and fix any vulnerabilities found",
+      "column": "done",
+      "createdAt": "2024-01-23T11:00:00.000Z",
+      "updatedAt": "2024-01-23T16:45:00.000Z"
+    },
+    {
+      "id": 10,
+      "title": "User feedback integration",
+      "description": "Implement feedback collection system and analytics tracking",
+      "column": "in_progress",
+      "createdAt": "2024-01-24T12:30:00.000Z",
+      "updatedAt": "2024-01-24T17:15:00.000Z"
+    }
+  ]
+}
